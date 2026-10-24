@@ -1,1 +1,31 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Pixel Party Shop</title><link rel="stylesheet" href="styles.css"><script src="score.js"></script></head><body class="shop-page"><header class="topbar"><a class="logo" href="index.html"><span>✦</span> PIXEL PARTY</a><nav><a class="nav-link" href="index.html">Arcade</a><span class="points-pill">✦ <b data-points>0</b> points</span></nav></header><main class="shop-main"><p class="kicker">PLAYER SHOP</p><h1>Spend your points.</h1><p class="lede">Earn points in games, then unlock small style upgrades. Your balance stays on this device.</p><section class="shop-card"><div class="shop-art">✦</div><div class="shop-copy"><p class="kicker">STYLE ITEM / 001</p><h2>Retro Mode</h2><p>Give Pixel Party a warm arcade palette with crisp, old-school edges.</p><button class="button primary" id="buy-retro">Buy for 100 points</button><p class="shop-note" id="shop-note">Balance: <b data-points>0</b> points</p></div></section></main><script>const button=document.querySelector('#buy-retro'),note=document.querySelector('#shop-note');function update(){const owned=PixelParty.retro();button.disabled=owned;button.textContent=owned?'Owned ✓':'Buy for 100 points';note.innerHTML=owned?'Retro Mode is active on this device.':'Balance: <b data-points>'+PixelParty.points()+'</b> points';}button.onclick=()=>{if(PixelParty.retro())return;if(!PixelParty.spend(100)){note.textContent='You need 100 points first.';return;}PixelParty.buyRetro();update();};document.addEventListener('pointschange',update);document.addEventListener('themechange',update);update();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pixel Party Shop</title><link rel="stylesheet" href="styles.css"><script src="score.js"></script>
+</head>
+<body class="shop-page">
+<header class="topbar"><a class="logo" href="index.html"><span>✦</span> PIXEL PARTY</a><nav><a class="nav-link" href="index.html">Arcade</a><span class="points-pill">✦ <b data-points>0</b> points</span></nav></header>
+<main class="shop-main">
+<p class="kicker">PLAYER SHOP</p><h1>Spend your points.</h1><p class="lede">Earn points in games, then unlock characters and style upgrades. Your collection stays on this device.</p>
+<section class="shop-card"><div class="shop-art">✦</div><div class="shop-copy"><p class="kicker">STYLE ITEM / 001</p><h2>Retro Mode</h2><p>Give Pixel Party a warm arcade palette with crisp, old-school edges.</p><button class="button primary" id="buy-retro">Buy for 100 points</button><p class="shop-note" id="shop-note">Balance: <b data-points>0</b> points</p></div></section>
+<section class="profile-shop"><div class="shop-section-head"><div><p class="kicker">PROFILE COLLECTION</p><h2>Choose your character.</h2></div><p class="shop-note" id="profile-status">Pixel is equipped.</p></div><div class="profile-grid">
+<article class="profile-card"><div class="profile-art profile-pixel">✦</div><h3>Pixel</h3><p>Default player profile.</p><button class="button profile-action" data-profile="pixel" data-price="0">Select</button></article>
+<article class="profile-card"><div class="profile-art profile-nova">✦</div><h3>Nova</h3><p>Comet-powered fighter.</p><button class="button profile-action" data-profile="nova" data-price="75">Buy for 75</button></article>
+<article class="profile-card"><div class="profile-art profile-rook">◆</div><h3>Rook</h3><p>Reliable arena guardian.</p><button class="button profile-action" data-profile="rook" data-price="100">Buy for 100</button></article>
+<article class="profile-card"><div class="profile-art profile-echo">☄</div><h3>Echo</h3><p>Phantom with a quiet style.</p><button class="button profile-action" data-profile="echo" data-price="125">Buy for 125</button></article>
+<article class="profile-card"><div class="profile-art profile-byte">☠</div><h3>Byte</h3><p>Enemy energy, player profile.</p><button class="button profile-action" data-profile="byte" data-price="150">Buy for 150</button></article>
+</div></section>
+</main>
+<script>
+const button=document.querySelector('#buy-retro'),note=document.querySelector('#shop-note');
+function update(){const owned=PixelParty.retro();button.disabled=owned;button.textContent=owned?'Owned ✓':'Buy for 100 points';note.innerHTML=owned?'Retro Mode is active on this device.':'Balance: <b data-points>'+PixelParty.points()+'</b> points';}
+button.onclick=()=>{if(PixelParty.retro())return;if(!PixelParty.spend(100)){note.textContent='You need 100 points first.';return;}PixelParty.buyRetro();update();};
+const profileKey='pixel-party-profiles',selectedKey='pixel-party-selected';
+const getProfiles=()=>JSON.parse(localStorage.getItem(profileKey)||'["pixel"]');
+const setProfiles=profiles=>localStorage.setItem(profileKey,JSON.stringify(profiles));
+const selectedProfile=()=>localStorage.getItem(selectedKey)||'pixel';
+function renderProfiles(){const owned=getProfiles(),selected=selectedProfile();document.querySelectorAll('.profile-action').forEach(action=>{const id=action.dataset.profile,price=Number(action.dataset.price),has=owned.includes(id);action.textContent=id===selected?'Selected ✓':has?'Select':`Buy for ${price}`;action.disabled=id===selected;});const active=document.querySelector('#profile-status');active.textContent=(selected[0].toUpperCase()+selected.slice(1))+' is equipped.';}
+document.querySelectorAll('.profile-action').forEach(action=>action.onclick=()=>{const id=action.dataset.profile,price=Number(action.dataset.price),owned=getProfiles();if(!owned.includes(id)){if(!PixelParty.spend(price)){document.querySelector('#profile-status').textContent='You need more points for that character.';return;}owned.push(id);setProfiles(owned);}localStorage.setItem(selectedKey,id);renderProfiles();});
+document.addEventListener('pointschange',()=>{update();renderProfiles();});document.addEventListener('themechange',update);update();renderProfiles();
+</script></body></html>
